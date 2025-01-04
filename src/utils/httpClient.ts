@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Ticker } from './types';
+const BASE_URL = process.env.BASE_URL
 
 export async function getTicker(market:string):Promise<Ticker>{
     
@@ -15,8 +16,8 @@ export async function getTicker(market:string):Promise<Ticker>{
 }
 
 export async function getTickers():Promise<number>{
-    try{
-        //const response = await axios.get(`https://api.backpack.exchange/api/v1/tickers`);
+    
+        //const response = await axios.get(`${BASE_URL}/api/v1/tickers`);
         const response:any = await new Promise((resolve)=>{
             setTimeout(()=>{
                 resolve(1);
@@ -24,10 +25,27 @@ export async function getTickers():Promise<number>{
         })
         
         return response.data;
-    }
-    catch(err){
-        return Response.json({
-            message:"Internal Server Error"
-        })
-    }
+    
+}
+
+
+export async function getDepth({market}:{market:string}){
+    const response:any = await new Promise((resolve)=>{
+        setTimeout(()=>{
+            resolve(1);
+        },2000)
+    })
+    //const response = await axios.get(`${BASE_URL}/api/v1/depth?symbol=${market}`)
+    return response.data;
+}
+
+
+export async function getTrades({market}:{market:string}){
+    const response:any = await new Promise((resolve)=>{
+        setTimeout(()=>{
+            resolve(1);
+        },2000)
+    })
+    //const response = await axios.get(`${BASE_URL}/api/v1/trades?symbol=${market}&limit=50`)
+    return response.data;
 }

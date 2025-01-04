@@ -5,6 +5,7 @@ import {useParams} from 'next/navigation'
 import MarketBar from '@/components/MarketBar'
 import TradeView from '@/components/TradeView'
 import SwapUI from '@/components/SwapUI'
+import Depth from '@/components/Depth'
 
 const page = () => {
     const {market} = useParams();
@@ -18,18 +19,19 @@ const page = () => {
             
             <div className="flex flex-row  h-[620px] border-y border-slate-800">
                 <div className="flex flex-col flex-1 ">
-                    <TradeView market={market as string}/>
+                    {/* <TradeView market={market as string}/> */}
                 </div>
                 <div className="w-[1px] flex-col border-slate-800 border-l"></div>
-                <div className="flex flex-col w-[250px] overflow-hidden">
-                    {/* <Depth market={market as string}> */}
+                <div className="flex flex-col max-w-[22.5rem] min-w-[15.625rem]
+                overflow-hidden">
+                    <Depth market={market as string}/>
                 </div>
             </div>
             
         </div>
         <div className="w-[1px] flex-col border-slate-800 border-l"></div>
-        <div>
-            <div className="bg-baseBackgroundL0 min-w-[250px]">
+        <div className="min-w-[15.625rem] max-w-[22.5rem]">
+            <div className="bg-baseBackgroundL0 min-w-[15.625rem] max-w-[22.5rem]">
                 <SwapUI market = {market as string}/>
 
             </div>
