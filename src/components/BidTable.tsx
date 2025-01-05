@@ -10,7 +10,7 @@ const BidTable = ({bids}:{bids:string[][]}) => {
     let totalsArray=[];
 
     for(let i = 0;i < reverseBids.length;i++){
-        total = total + parseInt(parseFloat(reverseBids[i][1])*100)
+        total = total + Math.floor(parseFloat(reverseBids[i][1])*100)
         totalsArray.push(total);
     }
     //console.log(totalsArray);

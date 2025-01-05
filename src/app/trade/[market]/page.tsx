@@ -23,7 +23,7 @@ const page = () => {
                 </div>
                 <div className="w-[1px] flex-col border-slate-800 border-l"></div>
                 <div className="flex flex-col max-w-[22.5rem] min-w-[15.625rem]
-                overflow-hidden">
+                ">
                     <Depth market={market as string}/>
                 </div>
             </div>
