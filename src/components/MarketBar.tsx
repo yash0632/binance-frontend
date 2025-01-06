@@ -1,18 +1,54 @@
 "use client";
+import {useState,useEffect} from 'react'
 
-import { useEffect, useState } from "react";
 import { Ticker } from "@/utils/types";
 import { getTicker } from "@/utils/httpClient";
 import Link from "next/link";
 import Image from "next/image";
+import { SignalingManager } from '@/utils/SignalingManager';
 
 const MarketBar = ({ market }: { market: string }) => {
   const [ticker, setTicker] = useState<Ticker | null>(null);
+
+
 
   useEffect(() => {
     getTicker(market).then((tickerData: Ticker) => {
       setTicker(tickerData);
     });
+
+    //@ts-ignore
+    SignalingManager.getInstance().registerCallback("bookTicker",(data:Partial<Ticker>)=>{
+      setTicker((prevTicker)=>({
+        firstPrice: data?.firstPrice || prevTicker?.firstPrice || "",
+        high: data.high || prevTicker?.high || "",
+        lastPrice:data?.lastPrice || prevTicker?.lastPrice || "",
+        low: data?.low || prevTicker?.low || "",
+        priceChange: data.priceChange || prevTicker?.priceChange || "",
+        priceChangePercent: data?.priceChangePercent || prevTicker?.priceChangePercent || "",
+        symbol: data?.symbol || prevTicker?.symbol || "",
+        trades: data?.trades || prevTicker?.trades || "",
+        volume: data?.volume || prevTicker?.volume || "",
+      }));
+    },`TICKER-${market}`)
+
+    SignalingManager.getInstance().sendMessage({
+      "method":"SUBSCRIBE",
+      "params":[`bookTicker.${market}`]
+    })
+
+
+    return ()=>{
+      SignalingManager.getInstance().deregisterCallback("ticker",`TICKER-${market}`);
+      SignalingManager.getInstance().sendMessage({
+        "method":"UNSUBSCRIBE",
+        "params":[`bookTicker.${market}`]
+      })
+    }
+
+
+
+
   }, [market]);
   return (
     <div className="w-[896.67px]">
@@ -26,10 +62,10 @@ const MarketBar = ({ market }: { market: string }) => {
                   true ? "text-greenText" : "text-redText"
                 }`}
               >
-                274
+                {ticker?.lastPrice || 24}
               </p>
               <p className="font-medium text-baseTextHighEmphasis text-left text-s tabular-nums">
-                274
+                  {ticker?.lastPrice || 24}
               </p>
             </div>
             <div className="flex flex-col relative justify-center">
@@ -38,10 +74,10 @@ const MarketBar = ({ market }: { market: string }) => {
               </p>
               <span
                 className={`mt-1 text-sm font-normal tabular-nums leading-4 text-baseTextHighEmphasis ${
-                  true ? "text-greenText" : "text-redText"
+                  Number(ticker?.priceChange) > 0  ? "text-greenText" : "text-redText"
                 }`}
               >
-                +4.40 +2.25%
+                {Number(ticker?.priceChange) > 0 ? "+" : ""}{Number(ticker?.priceChange)} {Number(ticker?.priceChangePercent).toFixed(2)}%
               </span>
             </div>
             <div className="flex flex-col justify-center relative">
@@ -49,7 +85,7 @@ const MarketBar = ({ market }: { market: string }) => {
                 24H High
               </p>
               <span className="text-baseTextHighEmphasis leading-4 tabular-nums mt-1 font-normal">
-                212
+                {ticker?.high}
               </span>
             </div>
             <div className="flex flex-col justify-center relative">
@@ -57,7 +93,7 @@ const MarketBar = ({ market }: { market: string }) => {
                 24H Low
               </p>
               <span className="text-baseTextHighEmphasis leading-4 tabular-nums mt-1 font-normal">
-                212
+                {ticker?.low}
               </span>
             </div>
             <div className="flex flex-col justify-center relative">
@@ -65,7 +101,7 @@ const MarketBar = ({ market }: { market: string }) => {
                 24H Volume(USD)
               </p>
               <span className="text-baseTextHighEmphasis leading-4 tabular-nums mt-1 font-normal">
-                212
+                {ticker?.volume}
               </span>
             </div>
           </div>

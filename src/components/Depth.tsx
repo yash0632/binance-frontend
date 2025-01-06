@@ -5,30 +5,40 @@ import BidTable from "./BidTable";
 import AskTable from "./AskTable";
 import { asks } from "@/utils/AskTest";
 
-const Depth = ({ market }: { market: string }) => {
+const DepthAndTrades = ({ market }: { market: string }) => {
     
   const [activeTab, setActiveTab] = useState("books");
 
   return (
     <div className=" flex flex-col space-y-4">
       <div className="flex flex-row space-x-4 justify-evenly mt-2 mx-2">
-        <div className="bg-neutral-800 rounded-lg cursor-pointer">
+        <div onClick={()=>{
+          setActiveTab("books")
+        }} className="bg-neutral-800 rounded-lg cursor-pointer">
           <p className="font-medium text-md px-4 py-2">Book</p>
         </div>
-        <div className="bg-neutral-800 rounded-lg cursor-pointer">
+        <div onClick={()=>{
+            setActiveTab("trades")      
+        }}  className="bg-neutral-800 rounded-lg cursor-pointer">
           <p className="font-medium text-md px-4 py-2">Trades</p>
         </div>
       </div>
-      <div>{activeTab == "books" && <BooksComponent />}</div>
+      <div>{activeTab == "books" && <DepthComponent />}</div>
+      <div>{activeTab == "trades" && <TradesComponent />}</div>
     </div>
   );
 };
 
-function BooksComponent() {
+function DepthComponent() {
     const scrollableRef = useRef<HTMLDivElement>(null);
     
 
-    
+    useEffect(()=>{
+      if(scrollableRef.current){
+        const midpoint = scrollableRef.current.scrollHeight - scrollableRef.current.clientHeight;
+        scrollableRef.current.scrollTo({top:midpoint/2,behavior:"smooth"});
+      }
+    },[])
     
     
     
@@ -46,9 +56,9 @@ function BooksComponent() {
           <p className="text-xs font-semibold font-sans">Total (SOL)</p>
         </div>
       </div>
-      <div className="h-[29.25rem]">
+      <div className="h-[30.25rem] space-y-1">
 
-        <div  id="scrollableDiv" ref={scrollableRef} className="h-[25.25rem] overflow-y-auto " style={{scrollbarWidth:"none"}}>
+        <div  id="scrollableDiv" ref={scrollableRef} className="h-[25.25rem] overflow-y-auto" style={{scrollbarWidth:"none"}}>
           
             <AskTable asks={asks} />
             <div className="flex flex-row justify-between px-3 py-0">
@@ -63,16 +73,31 @@ function BooksComponent() {
                             behavior: "smooth",
                           })
                   }
+                  console.log(scrollableRef.current?.scrollTop);
+                  console.log(scrollableRef.current?.scrollHeight)
+                  console.log(scrollableRef.current?.clientHeight)  
                   
-              }} className="text-xs cursor-pointer text-blue-600">Recenter</button>
+              }} className={`text-xs cursor-pointer text-blue-600 ${scrollableRef.current?.scrollTop == (scrollableRef.current?.scrollHeight)/2 ? "opacity-0" : ""}`}>Recenter</button>
             </div>
             <BidTable bids={bids} />
             
         </div>
-        <div>Tax</div>
+        <div className="h-[1.5rem] bg-green-300">
+
+
+        </div>
       </div>
     </div>
   );
 }
 
-export default Depth;
+
+function TradesComponent() {
+  return(
+    <div>
+      Trades
+    </div>
+  )
+}
+
+export default DepthAndTrades;

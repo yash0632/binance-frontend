@@ -6,6 +6,7 @@ import MarketBar from '@/components/MarketBar'
 import TradeView from '@/components/TradeView'
 import SwapUI from '@/components/SwapUI'
 import Depth from '@/components/Depth'
+import DepthAndTrades from '@/components/Depth'
 
 const page = () => {
     const {market} = useParams();
@@ -24,7 +25,7 @@ const page = () => {
                 <div className="w-[1px] flex-col border-slate-800 border-l"></div>
                 <div className="flex flex-col max-w-[22.5rem] min-w-[15.625rem]
                 ">
-                    <Depth market={market as string}/>
+                    <DepthAndTrades market={market as string}/>
                 </div>
             </div>
             
