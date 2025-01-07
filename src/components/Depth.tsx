@@ -11,6 +11,7 @@ import { getDepth } from "@/utils/httpClient";
 const DepthAndTrades = ({ market }: { market: string }) => {
   const [bids,setBids] = useState(bidData);
   const [asks,setAsks] = useState(askData);
+  const [price,setPrice] = useState(0);
 
 
 
@@ -32,8 +33,8 @@ const DepthAndTrades = ({ market }: { market: string }) => {
 
         console.log("having")
         setBids((originalBids)=>{
-          const bidsAfterUpdate:any[] = [...(originalBids || [])];
-          
+          let bidsAfterUpdate:any[] = [...(originalBids || [])];
+          let leftBids = [];
           for(let j = 0;j < data.bids.length;j++){
           
             let found = false;
@@ -42,22 +43,27 @@ const DepthAndTrades = ({ market }: { market: string }) => {
                 if(bidsAfterUpdate[i][0] == data.bids[j][0]){
                   bidsAfterUpdate[i][1] = data.bids[j][1];
                   found = true;
-                  if(bidsAfterUpdate[i][1] == "0.00"){
-                      bidsAfterUpdate.splice(i,1);
-                  }
+                  
                   
                   break;
                 }
               }
-            }
-            
-            
-  
-            if(!found){
-              bidsAfterUpdate.push(data.bids[j]);
+              if(!found){
+                leftBids.push(data.bids[j]);
+              }
             }
           }
-          console.log("bidsAfterUpdate:",bidsAfterUpdate);
+
+          bidsAfterUpdate = bidsAfterUpdate.filter((bids)=>{
+            return bids[1] != "0.00";
+          })
+
+          for(let i = 0;i < leftBids.length;i++){
+            bidsAfterUpdate.push(leftBids[i]);
+          }
+
+
+          //console.log("bidsAfterUpdate:",bidsAfterUpdate);
           return bidsAfterUpdate
         })
       }
@@ -65,7 +71,8 @@ const DepthAndTrades = ({ market }: { market: string }) => {
       
       if(data.asks){
         setAsks((originalAsks)=>{
-          const asksAfterUpdate:any[] = [...(originalAsks || [])];
+          let leftAsks = [];
+          let asksAfterUpdate:any[] = [...(originalAsks || [])];
           for(let j = 0;j < data.asks.length;j++){
             let found = false;
             if(originalAsks){
@@ -80,8 +87,17 @@ const DepthAndTrades = ({ market }: { market: string }) => {
             }
             
             if(!found){
-              asksAfterUpdate.push(data.asks[j]);
+              leftAsks.push(data.asks[j]);
             }
+          }
+
+          asksAfterUpdate = asksAfterUpdate.filter((asks)=>{
+            return asks[1] != "0.00";
+          })
+
+
+          for(let i = 0;i < leftAsks.length;i++){
+            asksAfterUpdate.push(leftAsks[i]);
           }
           return asksAfterUpdate;    
         }) 
@@ -90,6 +106,9 @@ const DepthAndTrades = ({ market }: { market: string }) => {
 
       
     },`ticker-${market}`)
+    SignalingManager.getInstance().registerCallback("bookTicker",(data)=>{
+      setPrice((prevPrice) => data.lastPrice || prevPrice)
+    },`tick-${market}`)
     SignalingManager.getInstance().sendMessage({
       "method":"SUBSCRIBE",
       "params":[`depth.200ms.${market}`]
@@ -97,6 +116,7 @@ const DepthAndTrades = ({ market }: { market: string }) => {
 
     return ()=>{
       SignalingManager.getInstance().deregisterCallback("depth",`ticker-${market}`)
+      SignalingManager.getInstance().deregisterCallback("bookTicker",`tick-${market}`)
       SignalingManager.getInstance().sendMessage({
         "method":"UNSUBSCRIBE",
         "params":[`depth.200ms.${market}`]
@@ -104,8 +124,8 @@ const DepthAndTrades = ({ market }: { market: string }) => {
     }
 
   },[market])
-  console.log("bids:",bids);
-  console.log("asks:",asks);
+  
+  
 
   const [activeTab, setActiveTab] = useState("books");
 
@@ -123,13 +143,13 @@ const DepthAndTrades = ({ market }: { market: string }) => {
           <p className="font-medium text-md px-4 py-2">Trades</p>
         </div>
       </div>
-      <div>{activeTab == "books" && <DepthComponent bidsData={bids} asksData={asks} />}</div>
+      <div>{activeTab == "books" && <DepthComponent bidsData={bids} asksData={asks} price={price}/>}</div>
       <div>{activeTab == "trades" && <TradesComponent />}</div>
     </div>
   );
 };
 
-function DepthComponent({bidsData,asksData}:{bidsData:any[],asksData:any[]}) {
+function DepthComponent({bidsData,asksData,price}:{bidsData:any[],asksData:any[],price:number}) {
     
 
 
@@ -167,7 +187,7 @@ function DepthComponent({bidsData,asksData}:{bidsData:any[],asksData:any[]}) {
           
             <AskTable asks={asksData} />
             <div className="flex flex-row justify-between px-3 py-0">
-              <p className="text-lg font-bold">215</p>
+              <p className="text-lg font-bold">{price}</p>
               <button onClick={(e)=>{
                   e.preventDefault();
                   console.log(scrollableRef.current?.scrollHeight);
@@ -178,9 +198,7 @@ function DepthComponent({bidsData,asksData}:{bidsData:any[],asksData:any[]}) {
                             behavior: "smooth",
                           })
                   }
-                  console.log(scrollableRef.current?.scrollTop);
-                  console.log(scrollableRef.current?.scrollHeight)
-                  console.log(scrollableRef.current?.clientHeight)  
+                  
                   
               }} className={`text-xs cursor-pointer text-blue-600 ${scrollableRef.current?.scrollTop == (scrollableRef.current?.scrollHeight)/2 ? "opacity-0" : ""}`}>Recenter</button>
             </div>
