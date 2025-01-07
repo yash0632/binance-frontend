@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { Ticker } from './types';
-const BASE_URL = process.env.BASE_URL
-
+const BASE_URL = 'api.backpack.exchange'
 export async function getTicker(market:string):Promise<Ticker>{
     
         const tickers = await getTickers()
@@ -30,12 +29,10 @@ export async function getTickers():Promise<number>{
 
 
 export async function getDepth({market}:{market:string}){
-    const response:any = await new Promise((resolve)=>{
-        setTimeout(()=>{
-            resolve(1);
-        },2000)
+    const response = await new Promise((resolve)=>{
+        setTimeout(()=>{resolve(1)},1000)
     })
-    //const response = await axios.get(`${BASE_URL}/api/v1/depth?symbol=${market}`)
+    //const response = await axios.get(`https://${BASE_URL}/api/v1/depth?symbol=${market}`)
     return response.data;
 }
 

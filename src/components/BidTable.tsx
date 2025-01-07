@@ -3,33 +3,41 @@ import React from 'react'
 
 
 const BidTable = ({bids}:{bids:string[][]}) => {
-    bids=bids.sort();
-    const reverseBids = bids.reverse();
-    let total = 0;
-    
-    let totalsArray=[];
-
-    for(let i = 0;i < reverseBids.length;i++){
-        total = total + Math.floor(parseFloat(reverseBids[i][1])*100)
-        totalsArray.push(total);
-    }
-    //console.log(totalsArray);
- 
-    let bidsArray = reverseBids.map((bid,idx)=>{
-        
-        return [parseFloat(bid[0]),parseFloat(bid[1])];
-    })
-
-    //bidsArray = bidsArray.reverse();
-
     let bidsArrayNew = [];
-    for(let i = 0;i < bidsArray.length;i++){
-        let newArray=[];
-        newArray.push(bidsArray[i][0]);
-        newArray.push(bidsArray[i][1]);
-        newArray.push(totalsArray[i]/100);
-        bidsArrayNew.push(newArray);
+    let newBids : number[][] = [];
+    if(bids){
+        for(let i = 0;i < bids.length;i++){
+            newBids.push([Number(parseFloat(bids[i][0]).toFixed(2)),Number(parseFloat(bids[i][1]).toFixed(2))])
+          }
+          newBids = newBids.sort();
+          
+          const reverseBids = newBids.reverse();
+          let total = 0;
+          
+          let totalsArray=[];
+          for(let i = 0;i < reverseBids.length;i++){
+              total = total + Math.floor(reverseBids[i][1]*100)
+              totalsArray.push(total);
+          }
+          //console.log(totalsArray);
+       
+          let bidsArray = reverseBids.map((bid,idx)=>{
+              
+              return [bid[0],bid[1]];
+          })
+      
+          //bidsArray = bidsArray.reverse();
+      
+          
+          for(let i = 0;i < bidsArray.length;i++){
+              let newArray=[];
+              newArray.push(bidsArray[i][0]);
+              newArray.push(bidsArray[i][1]);
+              newArray.push(totalsArray[i]/100);
+              bidsArrayNew.push(newArray);
+          }
     }
+    
     //console.log(bidsArrayNew);
     
 

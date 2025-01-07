@@ -1,23 +1,31 @@
 import React from "react";
 
 const AskTable = ({ asks }: { asks: string[][] }) => {
-  asks.sort();
-  let totalSum = 0;
-  let askTotalSumArray = asks.map((ask) => {
-    totalSum += Math.floor(parseFloat(ask[1]) * 100);
-    return totalSum;
-  });
-  askTotalSumArray = askTotalSumArray.reverse();
-  const reversedAsks = asks.reverse();
-
+  let newAsks:number[][] = [];
   const asksArray = [];
-  for (let i = 0; i < reversedAsks.length; i++) {
-    const asks_comp_array = [];
-    asks_comp_array.push(parseFloat(reversedAsks[i][0]));
-    asks_comp_array.push(parseFloat(reversedAsks[i][1]));
-    asks_comp_array.push(askTotalSumArray[i] / 100);
-    asksArray.push(asks_comp_array);
+  if(asks){
+    for(let i = 0;i < asks.length;i++){
+      newAsks.push([Number(parseFloat(asks[i][0]).toFixed(2)),Number(parseFloat(asks[i][1]).toFixed(2))])
+    }
+    newAsks.sort();
+    let totalSum = 0;
+    let askTotalSumArray = newAsks.map((ask) => {
+      totalSum += Math.floor(ask[1] * 100);
+      return totalSum;
+    });
+    askTotalSumArray = askTotalSumArray.reverse();
+    const reversedAsks = newAsks.reverse();
+  
+    
+    for (let i = 0; i < reversedAsks.length; i++) {
+      const asks_comp_array = [];
+      asks_comp_array.push(reversedAsks[i][0]);
+      asks_comp_array.push(reversedAsks[i][1]);
+      asks_comp_array.push(askTotalSumArray[i] / 100);
+      asksArray.push(asks_comp_array);
+    }
   }
+  
   return (
     <div>
       {asksArray.map((ask, idx) => (
