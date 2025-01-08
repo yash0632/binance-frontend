@@ -20,7 +20,7 @@ const page = () => {
             
             <div className="flex flex-row  h-[620px] border-y border-slate-800">
                 <div className="flex flex-col flex-1 ">
-                    {/* <TradeView market={market as string}/> */}
+                    <TradeView market={market as string}/>
                 </div>
                 <div className="w-[1px] flex-col border-slate-800 border-l"></div>
                 <div className="flex flex-col max-w-[22.5rem] min-w-[15.625rem]

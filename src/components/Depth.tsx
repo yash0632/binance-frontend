@@ -28,10 +28,10 @@ const DepthAndTrades = ({ market }: { market: string }) => {
     SignalingManager.getInstance().registerCallback("depth",(data)=>{
       
       
-      console.log(data);
+      
       if(data.bids){
 
-        console.log("having")
+        
         setBids((originalBids)=>{
           let bidsAfterUpdate:any[] = [...(originalBids || [])];
           let leftBids = [];
@@ -190,7 +190,7 @@ function DepthComponent({bidsData,asksData,price}:{bidsData:any[],asksData:any[]
               <p className="text-lg font-bold">{price}</p>
               <button onClick={(e)=>{
                   e.preventDefault();
-                  console.log(scrollableRef.current?.scrollHeight);
+                  
                   if(scrollableRef.current){
                         let midPoint = (scrollableRef.current.scrollHeight - scrollableRef.current.clientHeight)/2;
                         scrollableRef.current.scrollTo({

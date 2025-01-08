@@ -46,3 +46,13 @@ export async function getTrades({market}:{market:string}){
     //const response = await axios.get(`${BASE_URL}/api/v1/trades?symbol=${market}&limit=50`)
     return response.data;
 }
+
+
+export async function kLine(market:string,period:string,startTime:number,endTime:number){
+    const response = new Promise((resolve)=>{
+        setTimeout(()=>{
+            resolve(1);
+        },2000)
+    })
+    return response.data;
+}
